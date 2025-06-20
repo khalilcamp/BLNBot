@@ -28,7 +28,7 @@ module.exports = {
     const guildId = message.guild.id;
     const config = loadConfig();
 
-    if (!config[guildId] || !config[guildId].approvedChannelId) {
+    if (!config[guildId] || !config[guildId].finalChannelId) {
       return message.reply("Final suggestions channel is not configured. Please run !setup first.");
     }
 
