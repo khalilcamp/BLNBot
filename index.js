@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 
+const { startYoutubeMonitor } = require('./services/youtubeChecker');
 const reactionEvents = require('./events/reactionUpdate');
 
 const client = new Client({
@@ -62,6 +63,11 @@ for (const file of eventFiles) {
   }
 }
 
+client.once('ready', () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+  // startYoutubeMonitor(client);
+  console.log('YouTube channel monitoring started.');
+});
 
 client.login(process.env.DISCORD_TOKEN)
   .then(() => console.log('Bot is online!'))

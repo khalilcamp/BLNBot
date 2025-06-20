@@ -32,11 +32,12 @@ module.exports = {
     function cleanLink(input) {
       if (!input) return null;
       const match = input.match(/`([^`]+)`/);
-      return match ? match[1].trim() : input.replace(/[`~*_\[\]()]/g, "").trim();
+      if (match) return match[1].trim();
+      return input.replace(/[`~*_\[\]]/g, "").trim();
     }
 
     function isValidImageUrl(url) {
-      return /^https?:\/\/.+\.(png|jpg|jpeg|gif|webp|svg)$/i.test(url);
+      return /^https?:\/\/.+\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i.test(url);
     }
 
     let dmChannel;
@@ -45,12 +46,17 @@ module.exports = {
       console.log(`[LOG] DM channel created with user ${user.tag}`);
     } catch (err) {
       console.error(`[ERROR] Failed to create DM:`, err);
-      return message.reply("I couldn't open a DM with you. Please check your privacy settings.");
+      return message.reply(
+        "I couldn't open a DM with you. Please check your privacy settings."
+      );
     }
 
     const questions = [
       { key: "summary", question: "Please enter the **Summary** (string):" },
-      { key: "image", question: "Optionally, enter an **image URL** or type `none` to skip:" },
+      {
+        key: "image",
+        question: "Optionally, enter an **image URL** or type `none` to skip:",
+      },
     ];
 
     const answers = {};
@@ -70,22 +76,29 @@ module.exports = {
       const key = questions[currentQuestion].key;
       const response = m.content.trim();
 
-      answers[key] = key === "image" && response.toLowerCase() === "none" ? null : response;
+      answers[key] =
+        key === "image" && response.toLowerCase() === "none" ? null : response;
 
       currentQuestion++;
 
       if (currentQuestion < questions.length) {
         dmChannel.send(questions[currentQuestion].question);
-        console.log(`[LOG] Sent question: ${questions[currentQuestion].question}`);
+        console.log(
+          `[LOG] Sent question: ${questions[currentQuestion].question}`
+        );
       } else {
         collector.stop("done");
       }
     });
 
     collector.on("end", async (collected, reason) => {
-      console.log(`[LOG] Collector ended with reason: ${reason}. Collected ${collected.size} messages.`);
+      console.log(
+        `[LOG] Collector ended with reason: ${reason}. Collected ${collected.size} messages.`
+      );
       if (reason !== "done") {
-        await dmChannel.send("You did not reply in time. Please try the command again.");
+        await dmChannel.send(
+          "You did not reply in time. Please try the command again."
+        );
         return;
       }
 
@@ -123,7 +136,9 @@ module.exports = {
       try {
         const config = await loadConfig();
         const guildConfig = config[message.guild.id];
-        const mention = guildConfig?.reviewerRoleId ? `<@&${guildConfig.reviewerRoleId}>` : null;
+        const mention = guildConfig?.reviewerRoleId
+          ? `<@&${guildConfig.reviewerRoleId}>`
+          : null;
 
         if (mention) {
           await message.channel.send({ content: mention });
@@ -133,7 +148,9 @@ module.exports = {
         console.log("[LOG] Embed(s) sent to channel");
       } catch (err) {
         console.error("[ERROR] Failed to send embed(s) in channel:", err);
-        message.reply("Failed to send the summary embed. Please check bot permissions.");
+        message.reply(
+          "Failed to send the summary embed. Please check bot permissions."
+        );
       }
     });
   },
