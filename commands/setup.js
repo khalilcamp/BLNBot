@@ -40,9 +40,9 @@ module.exports = {
 
       await message.reply("Please send the ID of the **channel where approved suggestions will be published**.");
       const collectedApproved = await message.channel.awaitMessages({ filter, max: 1, time: 60000, errors: ['time'] });
-      const approvedChannelId = collectedApproved.first().content.trim();
+      const finalChannelId = collectedApproved.first().content.trim();
 
-      const approvedChannel = message.guild.channels.cache.get(approvedChannelId);
+      const approvedChannel = message.guild.channels.cache.get(finalChannelId);
       if (!approvedChannel) return message.reply("Invalid channel ID for approved channel. Setup cancelled.");
 
       await message.reply("Please send the ID of the **event notificarions role** (the role that will be notified or referenced).");
@@ -55,13 +55,13 @@ module.exports = {
       const config = await loadConfig();
       config[message.guild.id] = {
         reviewChannelId,
-        approvedChannelId,
+        finalChannelId,
         reviewerRoleId,
       };
       await saveConfig(config);
 
       await message.reply(
-        `✅ Setup complete:\n- Review Channel: <#${reviewChannelId}>\n- Approved Channel: <#${approvedChannelId}>\n- Reviewer Role: <@&${reviewerRoleId}>`
+        `✅ Setup complete:\n- Review Channel: <#${reviewChannelId}>\n- Approved Channel: <#${finalChannelId}>\n- Reviewer Role: <@&${reviewerRoleId}>`
       );
     } catch (err) {
       console.error("[ERROR] Setup failed:", err);
