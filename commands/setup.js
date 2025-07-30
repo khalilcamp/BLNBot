@@ -26,13 +26,8 @@ module.exports = {
   async execute(message, args) {
     const { PermissionsBitField } = require('discord.js');
 
-    const reviewerRoleIdOverride = '645906718001332225';
-
-    if (
-      !message.member.permissions.has(PermissionsBitField.Flags.Administrator) &&
-      !message.member.roles.cache.has(reviewerRoleIdOverride)
-    ) {
-      return message.reply("You need administrator permissions or the special reviewer role to run this command.");
+    if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+      return message.reply("You need administrator permissions to run this command.");
     }
 
     const filter = m => m.author.id === message.author.id;
