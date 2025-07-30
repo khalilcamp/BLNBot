@@ -24,7 +24,9 @@ module.exports = {
   name: "setup",
   description: "Setup the suggestion channels (review and approved) and reviewer role",
   async execute(message, args) {
-    if (!message.member.permissions.has("ADMINISTRATOR")) {
+    const { PermissionsBitField } = require('discord.js');
+
+  if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply("You need administrator permissions to run this command.");
     }
 
